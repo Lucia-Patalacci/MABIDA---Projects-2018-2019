@@ -1,0 +1,2 @@
+# Mabida-BayesianDataAnalysis
+Exam Assignment 
