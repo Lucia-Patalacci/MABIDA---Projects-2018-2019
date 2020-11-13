@@ -1,0 +1,13 @@
+
+model{
+for(osser in 1:enne){
+FTot[osser] ~ dpois(exp(prelinMu[osser]))
+prelinMu[osser] <- beta0 + beta1*dose[osser]+ beta2*dose2[osser]+ beta3*dose3[osser]
+}
+# a priori
+# a priori
+beta0 ~ dnorm(0,1/100)
+beta1 ~ dnorm(0,1/100)
+beta2 ~ dnorm(0,1/100)
+beta3 ~ dnorm(0,1/100)
+}

@@ -1,0 +1,308 @@
+---
+title: "ASSEGNAZIONE FINALE di *Bayesian Data Analysis*"
+author: "Lucia Patalacci"
+date: "22/10/2018"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+```{bash}
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##  Quesiti
+
+1. La distribuzione a posteriori contiene l'informazione (scegliere tra A,B,C):
+
+* A. dei soli dati;
+
+* B. solo di quella fornita dall'esperto;
+
+* C. fornita dall'esperto ed anche quella contenuta nei dati.
+
+*Risposta*: ....**C**....
+
+
+2. Il *degree of belief* elicitato da un esperto circa i parametri di un modello si
+traduce (scegliere tra A,B,C):
+
+* A. nella media delle osservazioni;
+
+* B. in una distribuzione di probabilit&agrave; congiunta per i parametri del modello;
+
+* C. in una funzione del solo campione raccolto.
+
+*Risposta*: ....**B**....
+
+
+3.Quante tipologie di incertezza possono essere considerate in un modello
+(scegliere tra A,B,C)?
+
+* A. Una, quella aleatoria;
+
+* B. Due, quella epistemica e quella aleatoria;
+
+* C. Tre, quella fattorizzante, quella ortogonalizzatrice e quella covariante.
+
+*Risposta*: ....**B**....
+
+
+4. Una rete bayesiana (scegliere tra A,B):
+
+* A. &egrave; una particolare fattorizzazione della distribuzione congiunta
+delle variabili considerate che sfrutta eventuali indipendenze condizionate;
+
+* B. &egrave; un grafo che rappresenta sempre relaioni causali tra le variabili considerate, quindi consente di prendere decisioni sugli interventi da operare.
+
+*Risposta*: ....**A**....
+
+
+5. Un intervallo di credibilit&agrave; a-posteriori del 95% per il parametro \Theta (scegliere tra A,B,C):
+
+* A. &egrave; definito da due estremi tanto pi&ugrave; distanti quanto pi&ugrave;
+grande &egrave; il campione;
+
+* B. &egrave; un intervallo tanto pi&ugrave; informativo quanto pi&ugrave; vicini
+sono i suoi estremi;
+
+* C. &egrave; un intervallo che dipende solo dal degree of belief dell'esperto
+che viene elicitato attraverso un esperimento ausiliario.
+
+*Risposta*: ....**B**....
+
+```{bash}
+```
+##  Domanda Aperta
+
+
+Spiegare brevemente cosa &egrave; e come si usa il criterio BIC con i modelli 
+lineari per risposte gaussiane.
+
+*Risposta (massimo 20 righe di 80 caratteri):*
+
+Bayesian Information Criterion (BIC): &egrave; una misura dell'accuratezza
+predittiva dei modelli statistici.
+
+E'in grado di porre a comparazione piu modelli
+predittivi con differente numero di parametri.
+
+$$BIC = -2logp(y \mid \hat{\theta}) + k(logN)$$ 
+dove: $logp(y \mid \hat{\theta})$ = funzione di log-verosimiglianza o funzione di log-densit&agrave; predittiva;
+
+
+$\hat{\theta}$ = stima puntuale di Max Verosimiglianza del parametro incognito;
+      
+      
+$k$ = numero di parametri stimati dal modello;
+      
+      
+$N$ = numerosit&agrave; del campione.
+      
+      
+Dalla formula si evince che, al crescere del numero di osservazioni campionarie,
+il BIC penalizza i modelli con un pi&ugrave; elevato numero di parametri quindi
+modelli caratterizzati da una maggiore complessit&agrave;.
+
+
+Nel caso in cui il modello &egrave; rappresentabile da una funzione di densit&agrave; di 
+probabilit&agrave; di tipo Gaussiana, $N(\mu,\sigma^2)$ con varianza costante e
+nota, la funzione di log-verosimiglianza $logp(y \mid \theta)$ &egrave; &egrave;
+proporzionale all'errore quadratico medio campionario.
+
+Il BIC, sotto tale ipotesi, si pu&ograve; scrivere come segue:
+
+$$BIC = \frac N{\sigma^2}[\hat{err} + (log N)  \frac kN{\sigma^2}]$$ 
+dove: $$\hat{err}=\frac 1N \sum_{i=1}^N (x_i-\hat{f}(x_i))^2 = -2logp(y \mid \hat{\theta})$$ 
+
+
+```{bash}
+```
+
+## Sezione FACOLTATIVA sui modelli Bayesiani
+In una precedente esercitazione online, &egrave; stato considerato il caso di studio benzopyrene.
+
+
+Considera il modello grafico Bayesiano seguente (una piastra Petri) in cui $D$ &egrave; la dose, $Y_T$ i foci totali per piastra e $Y_F$ i foci completamente trasformati per piastra:
+
+
+```{r grafo, echo=FALSE}
+knitr::include_graphics("grafo.jpg")
+```
+
+
+a) Considerando che il disegno &egrave; randomizzato per intervento con dose $D$ (condizionante osservato), sfrutta il codice sviluppato nella precedente esercitazione per scrivere un programma JAGS che campiona dalla a-posteriori del modello. Usa le distribuzioni condizionate definite durante l'esercitazione online. Effettua la simulazione con 3 catene in parallelo, burn-in=10000, run=50000, thin=5.
+
+b) Effettua la diagnostica di output.
+
+c) Effettua le principali sintesi descrittive usando le realizzazioni ottenute via simulazione.
+
+d) Ottieni un campione di dimensione 1000 dalla distrubuzione predittiva $(y_T,y_F|'DoseMax',DatiExpe)$ della futura osservazione (piastra) per $Y_T,Y_F$ alla massima dose considerata (condizionando a tale dose).
+
+e) Confronta il diagramma di frequenze relative $Y_T$ della simulazione predittiva con il diagramma di frequenze relative del campione di osservazioni $Y_T$ effettivamente osservate alla dose massima. Commenta i risultati.
+
+
+##Risoluzione sezione facoltativa
+####a)
+Il modello grafico Bayesiano &egrave; rappresentabile, nel contesto considerato, dal modello seguente:
+
+$$p(D,Y_T,Y_F) = p(D)p(Y_T\mid D)p(Y_F\mid D)p(Y_F\mid D,Y_T)$$
+
+Si considerano i valori stimati dei parametri a-posteriori del modello di regressione:
+$$ln(\lambda_i) = \beta_{0}+\beta_{1} x_{i,j}+\beta_{2} x_{i,j}^2+\beta_{3} x_{i,j}^3$$
+dove la funzione di massima verosimiglianza:
+$$p(y_{j} \mid \lambda_{j},\xi) = Poisson(y_{j} \mid \lambda_j)$$
+in cui $i$ si riferisce alla dose, mentre $j$ all'osservazione entro dose.
+mentre la funzione di densit&agrave; di probabilit&agrave; marginale dei parametri (a-priori):
+$$p(\lambda_{i} \mid \xi) \sim N(\mu,\sigma^2)$$
+I risultati del modello Bayesiano sono contenuti nel File ***"MCMC-benzo.RData"***.
+
+
+I dati sperimentali impiegati nella stima sono di seguito indicati:
+
+```{r benDF}
+setwd("/Users/ilullamac/Google Drive/MABIDA/ESAMI MABIDA/BayesianDataAnalysis")
+load("benDF2.RData")
+head(benDF2)
+
+```
+
+Di seguito, si effettua il campionamento dalla distribuzione condizionata a-posteriori, ovvero lo *starting point* del programma JAGS &egrave; rappresentato dalla media dei parametri stimati in precedenza.
+
+
+Si effettua una simulazione MCMC 3 catene in parallelo, burn-in=10000, run=50000, thin=5.
+```{r MCMC_benzo_data, echo=FALSE}
+
+load("MCMC-benzo.RData")
+
+require(rjags)
+library(rjags)
+library(mcmcplots)
+library(coda)
+library(ggmcmc)
+library(ggplot2)
+library(dplyr)
+
+
+# stime puntuali da distribuzioni a-posteriori ed inizializzazione
+mustart <- summary(myOut)$statistics[,"Mean"]
+set.seed(3456)
+initVal <- list(
+  list(beta0 = rnorm(1,mustart[1],1), 
+       beta1 = rnorm(1,mustart[2],1),
+       beta2 = rnorm(1,mustart[3],1),
+       beta3 = rnorm(1,mustart[4],1)
+  ),
+  list(beta0 = rnorm(1,mustart[1],1), 
+       beta1 = rnorm(1,mustart[2],1),
+       beta2 = rnorm(1,mustart[3],1),
+       beta3 = rnorm(1,mustart[4],1)
+  ),
+  list(beta0 = rnorm(1,mustart[1],1), 
+       beta1 = rnorm(1,mustart[2],1),
+       beta2 = rnorm(1,mustart[3],1),
+       beta3 = rnorm(1,mustart[4],1)
+  )
+)
+
+myModel <- jags.model(
+  file= "modFTot.bug", 
+  data=myData, 
+  inits = initVal,
+  n.chains = 3, 
+  n.adapt=10000, quiet=FALSE)
+
+# burn-in
+update(myModel,n.iter=10000)
+
+# run
+myOut1 <- coda.samples(model=myModel, 
+                      variable.names=c("beta0","beta1","beta2","beta3"),
+                      n.iter=50000,thin=5)
+
+save(myOut1,myModel,modFTot,myData,initVal,file="MCMC-benzo1.RData")
+```
+
+####b)
+I Risultati della diagnostica di output sono salvati nel file ***"diagnostica-benzo1.pdf"***
+```{r diagnostica, echo=FALSE}
+
+myOutgs <- ggs(myOut1,burnin=FALSE)
+ggmcmc(myOutgs,file="diagnostica-benzo1.pdf")
+```
+####c)
+Si effettuano le principali sintesi descrittive usando le realizzazioni ottenute via simulazione:
+```{r descrStat, echo=FALSE}
+
+summary(myOut1)
+
+```
+####d)
+Si Ottiene un campione di dimensione 1000 dalla distrubuzione predittiva della futura osservazione (piastra) per $Y_T,Y_F$ alla massima dose considerata:
+$$p(Y_T,Y_F|'DoseMax',DatiExpe)$$
+
+```{r previsione, echo=FALSE}
+
+myOutAll1<- rbind(as.matrix(myOut1[[1]]),as.matrix(myOut1[[2]]),as.matrix(myOut1[[3]]))
+n <- nrow(myOutAll1)
+Sample<-(n=1000)
+set.seed(1234)
+DatiExpe <- sample(1:n,Sample,replace=F)
+DoseMax<- c(1, log(max(benDF2$DoseN+0.025))^c(1,2,3))
+attesaMax <- exp(myOutAll1[DatiExpe,1:4]  %*%  matrix((DoseMax),ncol=1))
+density(attesaMax)
+
+#Distribuzione campionaria di $Y_T$ per "D"= Max
+MaxD<-max(benDF2$DoseN)
+benDFMax <- subset(benDF2, DoseN == MaxD)
+density(benDFMax$FTot)
+
+```
+####e)
+Di seguito sono rappresentati rispettivamente il diagramma di frequenze relative $Y_T$ ottenuti dalla simulazione predittiva ed il diagramma di frequenze relative del campione di osservazioni $Y_T$ effettivamente osservate alla dose massima.
+Le linee colorate di rosso rappresentano le rispettive funzioni di densit&agrave; kernel stimate.
+```{r Checkfreq, echo=FALSE}
+
+hist((benDFMax$FTot),prob=T,xlab="", main="Fig.1 YT osservati")
+lines(density((benDFMax$FTot)),col="red",lwd=1.5)
+
+#sqrt(var(benDFMax$FTot))
+```
+
+```{r CheckfreqPrev, echo=FALSE}
+
+hist(attesaMax,prob=T,xlab="",main="Fig.2 YT Attesi")
+lines(density(attesaMax),col="red",lwd=1.5)
+#sqrt(var(attesaMax))
+```
+
+
+Nella Fig.1: foci totali per piastra, avendo somministrato la dose massima di benzopyrene. La distribuzione di frequenza campionaria in questo caso &egrave; di poche osservazioni (10 piastre), con una media di foci per piastra di 4,5 e con dispersione delle frequenze intorno alla media di 2,319. Analogamente la densit&agrave; stimata per $Y_T \mid DMax$ appare uniforme: a parit&agrave; di dose somministrata la densit&agrave; non cambia sensibilmente.
+
+
+Nella Fig.2: i foci totali attesi per piastra, condizionati alla dose massima di benzopyrene.Essi sono stati stimati con il modello di Poisson su 1000 osservazioni: la media di foci per piastra risulta di 4,591 e la dispersione dei valori intorno alla media di 0.6678 &egrave;, molto inferiore a quella calcolata sui valori osservati. La densit&agrave; stimata per $Y_T \mid DMax$ si presenta con valori concentrati intorno al valor medio.
+
+
+I dati osservati, in questo caso, presentano una discrepanza con i dati generati dal modello bayesiano nella distribuzione predittiva a posteriori: tale differenza potrebbe essere casuale (sensibile differenza nell'ampiezza campionaria) o generata dalla scelta del modello predittivo che non &egrave; in grado di catturare correttamente la vera distribuzione dei dati osservati.
+
+
+
+
+```{r plotfreq10, echo=FALSE}
+#Sample1<-(n=10)
+#set.seed(1234)
+#DatiExpe1 <- sample(1:n,Sample1,replace=F)
+#DoseMax<- c(1, log(max(benDF2$DoseN+0.025))^c(1,2,3))
+#attesaMax1 <- exp(myOutAll1[DatiExpe1,1:4]  %*%  matrix((DoseMax),ncol=1))
+#density(attesaMax1)
+#hist(attesaMax1,prob=T,xlab="",main="Fig.3 YT Attesi n = 10")
+#lines(density(attesaMax1),col="blue",lwd=1.5)
+#sqrt(var(attesaMax1))
+```
+
+```{bash}
+```
